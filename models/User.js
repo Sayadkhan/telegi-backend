@@ -4,12 +4,12 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // Google login er jonno password optional hote pare
+    password: { type: String },
     googleId: { type: String },
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user", // Default hisabe shobai user
+      default: "user",
     },
   },
   { timestamps: true },

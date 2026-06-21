@@ -9,7 +9,9 @@ const generateToken = (id) => {
 
 // Register
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  // Body theke adminSecret ta nilam
+  const { name, email, password, adminSecret } = req.body;
+
   try {
     const userExists = await User.findOne({ email });
     if (userExists)
@@ -18,7 +20,19 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({ name, email, password: hashedPassword });
+    let assignedRole = "user";
+
+    if (adminSecret && adminSecret === process.env.ADMIN_SECRET) {
+      assignedRole = "admin";
+    }
+
+    // assignedRole ke model e pass kore dilam
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: assignedRole,
+    });
 
     res.status(201).json({
       _id: user._id,
@@ -31,7 +45,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 // Login
 exports.login = async (req, res) => {
   const { email, password } = req.body;
